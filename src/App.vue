@@ -1,11 +1,13 @@
-<script setup lang="ts"></script>
-
 <template>
-  <h1>You did it!</h1>
-  <p>
-    Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-    documentation
-  </p>
+<div id="app">
+<nav class="main-nav">
+<router-link to="/customers/list" >Customers </router-link> |
+<router-link to="/orders/list" >Orders </router-link> |
+<router-link to="/">Home</router-link>
+</nav>
+<hr />
+<main class="container" >
+<router-view />
+</main>
+</div>
 </template>
-
-<style scoped></style>
