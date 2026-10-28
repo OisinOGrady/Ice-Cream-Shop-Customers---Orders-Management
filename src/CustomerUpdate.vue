@@ -5,10 +5,15 @@ import { getCustomer, updateCustomerById } from './customers.js';
 
 const route = useRoute();
 const router = useRouter();
+const paymentInformation = ref({
+    cardNumber: '',
+    expirationDate: '',
+    cvv: '',
+});
 const customer = ref({
 customerId: null,
 name: '',
-paymentInfo: '',
+paymentInfo: paymentInformation.value,
 phone: '',
 });
 
@@ -28,28 +33,7 @@ onMounted(() => {
 fetchCustomerDetails();
 });
 
-</script>
 
-<form v-if="customer.customerId" @submit.prevent="updateCustomer">
-<input type="hidden" v-model="customer.customerId" />
-<p>
-<label for="name">Name:</label><br />
-<input type="text" id="name" v-model="customer.name" required />
-</p>
-<p>
-<label for="paymentInfo">Payment Information:</label><br />
-<input type="text" id="paymentInfo" v-model="customer.paymentInfo" />
-</p>
-<p>
-<label for="phone">Phone:</label><br />
-<input type="text" id="phone" v-model="customer.phone" />
-</p>
-<p>
-<button type="submit">Update Customer</button>
-</p>
-</form>
-
-<script>
 const updateCustomer = () => {
 try {
 updateCustomerById(customer.value);
@@ -62,3 +46,31 @@ error.value = "Error saving: " + e.message;
 }
 };
 </script>
+
+<template>
+    <div>
+<form v-if="customer.customerId" @submit.prevent="updateCustomer">
+<input type="hidden" v-model="customer.customerId" />
+<p>
+<label for="name">Name:</label><br />
+<input type="text" id="name" v-model="customer.name" required />
+</p>
+<p>
+<label for="paymentInfo">Payment Information:</label><br />
+<label for="cardNumber">Card Number: </label>
+<input type="text" id="cardNumber" v-model="customer.paymentInfo.cardNumber" /> <br />
+<label for="expirationDate">Expiration Date: </label>
+<input type="text" id="expirationDate" v-model="customer.paymentInfo.expirationDate" /> <br />
+<label for="cvv">CVV: </label>
+<input type="text" id="cvv" v-model="customer.paymentInfo.cvv" />
+</p>
+<p>
+<label for="phone">Phone:</label><br />
+<input type="text" id="phone" v-model="customer.phone" />
+</p>
+<p>
+<button type="submit">Update Customer</button>
+</p>
+</form>
+</div>
+</template>

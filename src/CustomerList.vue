@@ -3,16 +3,31 @@ import { ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { customers, deleteCustomerById } from './customers.js';
 // --- State Definitions using ref ---
-const route = useRoute(); // Access the current route
-object
+const route = useRoute(); // Access the current route object
 // Read flash message/error from query parameters on load
 const message = ref(route.query.message || '');
 const error = ref(route.query.error || '');
+
+const deleteCustomer = (customerId, customerName) => {
+if (confirm(`Are you sure you want to delete customer '${customerName}'?`)) {
+try {
+deleteCustomerById(customerId);
+message.value = `Customer '${customerName}' deleted successfully!`;
+error.value = '';
+} catch (e) {
+error.value = 'Error deleting customer: ' + e.message;
+message.value = '';
+}
+}
+};
 </script>
 
 <template>
 <div>
 <h1>Customer List</h1>
+<p>
+<router-link to="/customers/create">Create New Customer</router-link>
+</p>
     <table border="1">
             <thead>
                 <tr>
@@ -40,19 +55,3 @@ const error = ref(route.query.error || '');
 </table>
 </div>
 </template>
-
-<script functions>
-/ --- Functions ---
-const deleteCustomer = (customerId, customerName) => {
-if (confirm(`Are you sure you want to delete customer '${customerName}'?`)) {
-try {
-deleteCustomerById(customerId);
-message.value = `Customer '${customerName}' deleted successfully!`;
-error.value = '';
-} catch (e) {
-error.value = 'Error deleting customer: ' + e.message;
-message.value = '';
-}
-}
-};
-</script>

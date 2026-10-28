@@ -1,7 +1,18 @@
-<script>
+<script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { addCustomer } from './customers.js';
+const router = useRouter();
+
+const paymentInformation = ref({
+    cardNumber: '',
+    expirationDate: '',
+    cvv: '',
+});
+
 const customer = ref({
 name: '',
-paymentInfo: '',
+paymentInfo: paymentInformation.value,
 phone: '',
 });
 const error = ref('');
@@ -22,15 +33,22 @@ error.value = 'Error creating customer: ' + e.message;
 };
 </script>
 
-<form @submit.prevent="createCustomer">
+<template>
+<div>
+<form @submit.prevent="createCustomer()">
 <p>
 <label for="name">Name:</label>
-<br />
+<br/>
 <input type="text" id="name" v-model="customer.name" required />
 </p>
 <p>
 <label for="paymentInfo">Payment Information:</label><br />
-<input type="text" id="paymentInfo" v-model="customer.paymentInfo" />
+<label for="cardNumber">Card Number: </label>
+<input type="text" id="cardNumber" v-model="customer.paymentInfo.cardNumber"/> <br />
+<label for="expirationDate">Expiration Date: </label>
+<input type="text" id="expirationDate" v-model="customer.paymentInfo.expirationDate"/> <br />
+<label for="cvv">CVV: </label>
+<input type="text" id="cvv" v-model="customer.paymentInfo.cvv"/>
 </p>
 <p>
 <label for="phone">Phone:</label><br />
@@ -38,3 +56,5 @@ error.value = 'Error creating customer: ' + e.message;
 </p>
 <p><button type="submit">Save New Customer</button></p>
 </form>
+</div>
+</template>

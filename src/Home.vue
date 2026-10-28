@@ -2,16 +2,16 @@
 <div class="home">
   <h1>📖 Ice Cream Shop</h1>
 
-  <!-- Home image: a stack of books with a research paper -->
+  <!-- Home image: a stack of books with a research paper
   <svg class="home-image" viewBox="0 0 240 160" role="img" aria-label="Stack of books with a research paper">
-    <!-- books -->
+    books
     <rect x="30" y="118" width="130" height="22" rx="3" fill="#2f5d8a" />
     <rect x="40" y="96" width="115" height="22" rx="3" fill="#c0504d" />
     <rect x="34" y="74" width="122" height="22" rx="3" fill="#4f8a4f" />
     <rect x="30" y="118" width="12" height="22" fill="#24496d" />
     <rect x="40" y="96" width="12" height="22" fill="#9c3f3c" />
     <rect x="34" y="74" width="12" height="22" fill="#3d6e3d" />
-    <!-- paper -->
+     paper
     <g transform="rotate(8 190 80)">
       <rect x="160" y="30" width="60" height="80" rx="2" fill="#ffffff" stroke="#888" />
       <rect x="168" y="40" width="44" height="5" fill="#555" />
@@ -21,7 +21,7 @@
       <rect x="168" y="80" width="44" height="3" fill="#aaa" />
       <rect x="168" y="88" width="40" height="3" fill="#aaa" />
     </g>
-  </svg>
+  </svg> -->
 
   <p>Manage the Customers and Orders in your database.</p>
 

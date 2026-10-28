@@ -5,7 +5,7 @@
 <router-link to="/orders/list" >Orders </router-link> |
 <router-link to="/">Home</router-link>
 </nav>
-<hr />
+<hr/>
 <main class="container" >
 <router-view />
 </main>
