@@ -24,6 +24,8 @@ message.value = '';
 
 <template>
 <div>
+<p v-if="message" class="success">{{ message }}</p>
+<p v-if="error" class="error">{{ error }}</p>
 <h1>Customer List</h1>
 <p>
 <router-link to="/customers/create">Create New Customer</router-link>

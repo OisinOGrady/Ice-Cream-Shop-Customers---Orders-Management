@@ -1,6 +1,6 @@
 <template>
 <div class="home">
-  <h1>📖 Ice Cream Shop</h1>
+  <h1>🍦 Ice Cream Shop</h1>
 
   <!-- Home image: a stack of books with a research paper
   <svg class="home-image" viewBox="0 0 240 160" role="img" aria-label="Stack of books with a research paper">

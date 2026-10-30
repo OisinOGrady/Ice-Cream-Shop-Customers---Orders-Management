@@ -24,6 +24,8 @@ if (confirm(`Are you sure you want to delete order '${productName}'?`)) {
 
 <template>
 <div>
+<p v-if="message" class="success">{{ message }}</p>
+<p v-if="error" class="error">{{ error }}</p>
 <h1>Order List</h1>
 <p>
 <router-link to="/orders/create">Create New Order</router-link>

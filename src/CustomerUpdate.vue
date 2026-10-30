@@ -18,12 +18,13 @@ phone: '',
 });
 
 const error = ref('');
+
 const fetchCustomerDetails = () => {
 const idFromUrl = route.params.customerId;
 try {
 const data = getCustomer(idFromUrl);
 if (!data) throw new Error('Could not find that customer.');
-customer.value = { ...data };
+customer.value = { ...data, paymentInfo: { ...data.paymentInfo } };
 } catch (e) {
 error.value = "Error pre-loading: " + e.message;
 }
@@ -35,6 +36,7 @@ fetchCustomerDetails();
 
 
 const updateCustomer = () => {
+    error.value = '';
 try {
 updateCustomerById(customer.value);
 router.push({
@@ -48,6 +50,7 @@ error.value = "Error saving: " + e.message;
 </script>
 
 <template>
+<p v-if="error" class="error">{{ error }}</p>
     <div>
 <form v-if="customer.customerId" @submit.prevent="updateCustomer">
 <input type="hidden" v-model="customer.customerId" />
@@ -58,15 +61,15 @@ error.value = "Error saving: " + e.message;
 <p>
 <label for="paymentInfo">Payment Information:</label><br />
 <label for="cardNumber">Card Number: </label>
-<input type="text" id="cardNumber" v-model="customer.paymentInfo.cardNumber" /> <br />
+<input type="text" id="cardNumber" v-model="customer.paymentInfo.cardNumber" required /> <br />
 <label for="expirationDate">Expiration Date: </label>
-<input type="text" id="expirationDate" v-model="customer.paymentInfo.expirationDate" /> <br />
+<input type="text" id="expirationDate" v-model="customer.paymentInfo.expirationDate" required /> <br />
 <label for="cvv">CVV: </label>
-<input type="text" id="cvv" v-model="customer.paymentInfo.cvv" />
+<input type="text" id="cvv" v-model="customer.paymentInfo.cvv" required />
 </p>
 <p>
 <label for="phone">Phone:</label><br />
-<input type="text" id="phone" v-model="customer.phone" />
+<input type="text" id="phone" v-model="customer.phone" required />
 </p>
 <p>
 <button type="submit">Update Customer</button>

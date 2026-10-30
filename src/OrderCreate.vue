@@ -13,6 +13,7 @@ quantity: 0,
 const error = ref('');
 
 const createOrder = () => {
+  error.value = '';
 try {
   addOrder(order.value);
   // Redirect on success, using query parameters for the message
@@ -30,6 +31,7 @@ try {
 
 <template>
 <div>
+  <p v-if="error" class="error">{{ error }}</p>
      <form @submit.prevent="createOrder">
     <p>
       <label for="product">Product:</label><br />

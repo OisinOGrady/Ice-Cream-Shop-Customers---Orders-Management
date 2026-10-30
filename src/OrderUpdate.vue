@@ -30,6 +30,7 @@ fetchOrderDetails();
 });
 
 const updateOrder = () => {
+  error.value = '';
 try {
   updateOrderById(order.value);
   router.push({
@@ -43,6 +44,7 @@ try {
 </script>
 
 <template>
+<p v-if="error" class="error">{{ error }}</p>
     <div>
         <form v-if="order.orderId" @submit.prevent="updateOrder">
         <input type="hidden" v-model="order.orderId" />
