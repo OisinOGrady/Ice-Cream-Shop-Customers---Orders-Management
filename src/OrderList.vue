@@ -1,3 +1,6 @@
+<!--Displays all orders in a table and handles item deletion. Import the functions and data directly from orders.js to read 
+or modify memory, and use Vue Router(useRouter, useRoute) to navigate between pages and pass flash messages via URL queries -->
+
 <script setup>
 import { ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -42,7 +45,7 @@ if (confirm(`Are you sure you want to delete order '${productName}'?`)) {
        </tr>
      </thead>
      <tbody>   
-       <tr v-for="order in orders" :key="order.orderId">
+       <tr v-for="order in orders" :key="order.orderId"> <!-- 1st loops through our reactive array to render table rows, 2nd gives Vue a stable DOM tracking key."-->
          <td>{{ order.orderId }}</td>
          <td>
     <router-link :to="{ name: 'OrderUpdate', params: { orderId: 

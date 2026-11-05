@@ -1,3 +1,7 @@
+<!-- provides the global navigation bar and a <router-view /> slot. 
+ When clicks a nav link, index.js tells App.vue which component 
+ to inject into that <router-view /> slot. -->
+
 <template>
 <div id="app">
 <nav class="main-nav">

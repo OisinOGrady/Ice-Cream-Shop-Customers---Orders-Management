@@ -1,3 +1,6 @@
+<!--Captures user inputs through a form to create a new order. Import the functions and data directly from orders.js to read 
+or modify memory, and use Vue Router(useRouter, useRoute) to navigate between pages and pass flash messages via URL queries -->
+
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -17,6 +20,7 @@ const createOrder = () => {
 try {
   addOrder(order.value);
   // Redirect on success, using query parameters for the message
+  
   router.push({
     path: '/orders/list',
     query: {
@@ -26,13 +30,14 @@ try {
 } catch (e) {
   error.value = 'Error creating order: ' + e.message;
 }
-};
+}; //router.push() redirects the user back to the list view and passes a success message via URL query parameters."
+
 </script>
 
 <template>
-<div>
+<div> <!-- *v-model provides two-way data binding, keeping our input fields and reactive JS object synchronized on every keystroke-->
   <p v-if="error" class="error">{{ error }}</p>
-     <form @submit.prevent="createOrder">
+     <form @submit.prevent="createOrder"> <!--intercepts form submission so Vue can handle it asynchronously-->
     <p>
       <label for="product">Product:</label><br />
       <input type="text" id="product" v-model="order.product" required />

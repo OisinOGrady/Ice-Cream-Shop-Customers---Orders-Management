@@ -1,3 +1,5 @@
+<!--contains no reactive data, uses <router-link> to let 
+users jump straight to the management areas-->
 <template>
 <div class="home">
   <h1>🍦 Ice Cream Shop</h1>

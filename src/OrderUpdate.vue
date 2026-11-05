@@ -1,3 +1,6 @@
+<!--Pre-loads an existing record into a form and updates it. Import the functions and data directly from orders.js to read 
+or modify memory, and use Vue Router(useRouter, useRoute) to navigate between pages and pass flash messages via URL queries -->
+
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -15,7 +18,7 @@ const order = ref({
 
 const error = ref('');
 const fetchOrderDetails = () => {
-const idFromUrl = route.params.orderId;
+const idFromUrl = route.params.orderId; // "params" extracts the dynamic ID from the URL path string
 try {
   const data = getOrder(idFromUrl);
   if (!data) throw new Error('Could not find that order.');
@@ -25,6 +28,8 @@ try {
 }
 };
 
+//onMounted() fires automatically the exact second the component inserts into the DOM, 
+// triggering fetchOrderDetails() to pre-fill the form
 onMounted(() => {
 fetchOrderDetails();
 });
@@ -46,7 +51,7 @@ try {
 <template>
 <p v-if="error" class="error">{{ error }}</p>
     <div>
-        <form v-if="order.orderId" @submit.prevent="updateOrder">
+        <form v-if="order.orderId" @submit.prevent="updateOrder"> <!--prevent the form from rendering until data has pre-loaded-->
         <input type="hidden" v-model="order.orderId" />
     <p>
       <label for="product">Product:</label><br />

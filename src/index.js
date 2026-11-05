@@ -1,4 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router';
+// imports all your .vue components and maps them to URL paths.
+
+import { createRouter, createWebHistory } from 'vue-router'; //Give cleans URLs instead of hash symbols//
 import Home from './Home.vue';
 import CustomerList from './CustomerList.vue';
 import CustomerCreate from './CustomerCreate.vue';
@@ -15,7 +17,7 @@ component: Home
 },
 {
 path: '/customers/list',
-name: 'CustomerList',
+name: 'CustomerList', //push or link safely using identifiers rather than raw strings//
 component: CustomerList
 },
 {
