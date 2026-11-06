@@ -1,12 +1,21 @@
-<!--Captures user inputs through a form to create a new order. Import the functions and data directly from orders.js to read 
-or modify memory, and use Vue Router(useRouter, useRoute) to navigate between pages and pass flash messages via URL queries -->
-
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { addOrder } from './orders.js';
-const router = useRouter();
+const API_BASE_URL = "https://rest-icecream.onrender.com";
 
+const parseResponse = async (response) => {
+  const text = await response.text();
+  let data = text;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {}
+  if (!response.ok) {
+    throw new Error((data && (data.message || data.error)) || text || response.statusText);
+  }
+  return data;
+};
+
+const router = useRouter();
 const order = ref({
 product: '',
 flavor: '',
@@ -15,16 +24,19 @@ quantity: 0,
 });
 const error = ref('');
 
-const createOrder = () => {
+const createOrder = async () => {
   error.value = '';
 try {
-  addOrder(order.value);
-  // Redirect on success, using query parameters for the message
-  
+  const response = await fetch(`${API_BASE_URL}/orders`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order.value),
+  });
+  await parseResponse(response);
   router.push({
     path: '/orders/list',
     query: {
-      message: `Order for '${order.value.product}' created successfully!`,
+      message: `Order created successfully!`,
     },
   });
 } catch (e) {

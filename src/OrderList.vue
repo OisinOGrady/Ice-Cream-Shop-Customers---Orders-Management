@@ -1,28 +1,44 @@
-<!--Displays all orders in a table and handles item deletion. Import the functions and data directly from orders.js to read 
-or modify memory, and use Vue Router(useRouter, useRoute) to navigate between pages and pass flash messages via URL queries -->
-
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { orders, deleteOrderById } from './orders.js';
+
+const API_URL = "https://rest-icecream.onrender.com/orders";
 // --- State Definitions using ref --
 const route = useRoute(); // Access the current route object
+const orders = ref([]);
 // Read flash message/error from query parameters on load
 const message = ref(route.query.message || '');
 const error = ref(route.query.error || '');
 
-const deleteOrder = (orderId, productName) => {
-if (confirm(`Are you sure you want to delete order '${productName}'?`)) {
+const fetchOrders = async () => {
   try {
-    deleteOrderById(orderId);
-    message.value = `Order '${productName}' deleted successfully!`;
-    error.value = '';
+    const response = await fetch(API_URL);
+    if (!response.ok) throw new Error('Request failed with status ' + response.status);
+    orders.value = await response.json();
   } catch (e) {
-    error.value = 'Error deleting order: ' + e.message;
-    message.value = '';
+    error.value = 'Error fetching orders: ' + e.message;
   }
-}
 };
+
+const deleteOrder = async (orderId, productName) => {
+  if (confirm(`Are you sure you want to delete order '${productName}'?`)) {
+    try {
+      const response = await fetch(`${API_URL}/${orderId}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Request failed with status ' + response.status);
+      orders.value = orders.value.filter(order => order.orderId !== orderId);
+      message.value = `Order '${productName}' deleted successfully!`;
+      error.value = '';
+    } catch (e) {
+      error.value = 'Error deleting order: ' + e.message;
+      message.value = '';
+    }
+  }
+};
+
+onMounted(() => {
+  fetchOrders();
+});
+
 </script>
 
 <template>
