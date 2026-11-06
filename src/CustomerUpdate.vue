@@ -1,10 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { getCustomer, updateCustomerById } from './customers.js';
+const API_BASE_URL = "https://rest-icecream.onrender.com";
 
 const route = useRoute();
 const router = useRouter();
+
 const paymentInformation = ref({
     cardNumber: '',
     expirationDate: '',
@@ -17,36 +18,85 @@ paymentInfo: paymentInformation.value,
 phone: '',
 });
 
+const parseResponse = async (response) => {
+const text = await response.text();
+let data = text;
+try {
+data = text ? JSON.parse(text) : null;
+} catch {}
+if (!response.ok) {
+throw new Error((data && (data.message || data.error)) || text
+|| response.statusText);
+}
+return data;
+};
+
+const customerOrders = ref([]);
+const allOrders = ref([]);
+const selectedOrderId = ref('');
+
+const availableOrders = computed(() => {
+    return allOrders.value.filter((o) => !customerOrders.value.some((co) => o.orderId === co.orderId));
+});
+
+const fetchAllOrders = async () => {
+    const res = await fetch(`${API_BASE_URL}/orders`);
+    allOrders.value = await parseResponse(res) || [];
+};
+
 const error = ref('');
 
-const fetchCustomerDetails = () => {
+const fetchCustomerDetails = async () => {
 const idFromUrl = route.params.customerId;
 try {
-const data = getCustomer(idFromUrl);
-if (!data) throw new Error('Could not find that customer.');
-customer.value = { ...data, paymentInfo: { ...data.paymentInfo } };
+    const response = await fetch(`${API_BASE_URL}/customers/${idFromUrl}`);
+    const data = await parseResponse(response);
+    if (!data) throw new Error('Customer not found');
+    customer.value = { customerId: data.customerId, name: data.name, paymentInfo: data.paymentInfo, phone: data.phone };
+    customerOrders.value = data.orders || [];
 } catch (e) {
-error.value = "Error pre-loading: " + e.message;
+    error.value = 'Error pre-loading: ' + e.message;
+}
+};
+
+const updateCustomer = async () => {
+error.value = '';
+try {
+    const response = await fetch(`${API_BASE_URL}/customers/${customer.value.customerId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(customer.value),
+    });
+    await parseResponse(response);
+    router.push({
+path: '/customers/list',
+query: {
+    message: 'Customer updated successfully!'
+}
+});
+} catch (e) {
+    error.value = 'Error updating customer: ' + e.message;
 }
 };
 
 onMounted(() => {
 fetchCustomerDetails();
+fetchAllOrders();
 });
 
-
-const updateCustomer = () => {
-    error.value = '';
-try {
-updateCustomerById(customer.value);
-router.push({
-path: '/customers/list',
-query: { message: 'Customer updated successfully!' }
-});
-} catch (e) {
-error.value = "Error saving: " + e.message;
-}
+const removeOrder = async (orderId) => {
+const res = await fetch(`${API_BASE_URL}/customers/${customer.value.customerId}/orders/${orderId}`,{ method: 'DELETE' });
+if (!res.ok) alert('Failed to remove order.');
+else await fetchCustomerDetails();
 };
+
+const addOrder = async () => {
+if (!selectedOrderId.value) return;
+const res = await fetch( `${API_BASE_URL}/customers/${customer.value.customerId}/orders/${selectedOrderId.value}`,{ method: 'PUT' });
+if (!res.ok) alert('Failed to add order.');
+else { selectedOrderId.value = ''; await fetchCustomerDetails(); }
+};
+
 </script>
 
 <template>
@@ -76,4 +126,28 @@ error.value = "Error saving: " + e.message;
 </p>
 </form>
 </div>
+
+<!-- Orders managed by this customer -->
+<div v-if="customer.customerId" class="orders-section">
+<hr /><h2>Orders of this Customer</h2>
+<ul>
+<li v-for="order in customerOrders" :key="order.orderId">
+{{ order.orderId }} ({{ order.product }})
+<button @click.prevent="removeOrder(order.orderId)">Remove</button>
+</li>
+</ul>
+<p v-if="!customerOrders || customerOrders.length === 0">No orders
+assigned.</p>
+
+<h3>Add an Order</h3>
+<select v-model="selectedOrderId">
+<option disabled value="">Please select one</option>
+<option v-for="order in availableOrders" :key="order.orderId" :value="order.orderId">
+{{ order.orderId }} ({{ order.product }})
+</option>
+</select>
+<button @click.prevent="addOrder" :disabled="!selectedOrderId">Add
+Order</button>
+</div>
+<p><router-link to="/customers/list">🔙 Back to Customer List</router-link></p>
 </template>

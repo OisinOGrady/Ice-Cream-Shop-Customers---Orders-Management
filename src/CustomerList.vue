@@ -1,25 +1,43 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { customers, deleteCustomerById } from './customers.js';
+
+const API_URl = "https://rest-icecream.onrender.com/customers";
 // --- State Definitions using ref ---
 const route = useRoute(); // Access the current route object
+const customers = ref([]);
 // Read flash message/error from query parameters on load
 const message = ref(route.query.message || '');
 const error = ref(route.query.error || '');
 
-const deleteCustomer = (customerId, customerName) => {
-if (confirm(`Are you sure you want to delete customer '${customerName}'?`)) {
+const fetchCustomers = async () => {
 try {
-deleteCustomerById(customerId);
-message.value = `Customer '${customerName}' deleted successfully!`;
-error.value = '';
+const response = await fetch(API_URl);
+if (!response.ok) throw new Error('Request failed with status ' + response.status);
+customers.value = await response.json();
+} catch (e) {
+error.value = 'Error fetching customers: ' + e.message;
+}
+};
+
+const deleteCustomer = async (customerId, customerName) => {
+if (confirm(`Are you sure you want to delete customer '${customerName}'?`)) {
+    try {const response = await fetch(`${API_URl}/${customerId}`, {method: 'DELETE' });
+    if (!response.ok) throw new Error('Request failed with status ' + response.status);
+    message.value = `Customer '${customerName}' deleted successfully.`;
+    await fetchCustomers();
+    error.value = '';
 } catch (e) {
 error.value = 'Error deleting customer: ' + e.message;
 message.value = '';
 }
-}
 };
+}
+
+onMounted(() => {
+fetchCustomers();
+});
+
 </script>
 
 <template>
