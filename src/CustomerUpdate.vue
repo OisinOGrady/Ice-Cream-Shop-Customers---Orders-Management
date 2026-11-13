@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-const API_BASE_URL = "https://rest-icecream.onrender.com";
+const API_BASE_URL = "http://localhost:3000";
 
 const route = useRoute();
 const router = useRouter();
@@ -53,7 +53,7 @@ try {
     const data = await parseResponse(response);
     if (!data) throw new Error('Customer not found');
     customer.value = { customerId: data.customerId, name: data.name, paymentInfo: data.paymentInfo, phone: data.phone };
-    customerOrders.value = data.orders || [];
+    customerOrders.value = data.customerOrders || [];
 } catch (e) {
     error.value = 'Error pre-loading: ' + e.message;
 }

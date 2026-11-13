@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
-const API_URl = "https://rest-icecream.onrender.com/customers";
+const API_URl = "http://localhost:3000/customers";
 // --- State Definitions using ref ---
 const route = useRoute(); // Access the current route object
 const customers = ref([]);

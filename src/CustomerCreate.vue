@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-const API_BASE_URL = "https://rest-icecream.onrender.com";
+const API_BASE_URL = "http://localhost:3000";
 
 
 const parseResponse = async (response) => {
