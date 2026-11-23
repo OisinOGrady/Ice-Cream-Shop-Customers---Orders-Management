@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 const API_BASE_URL = "http://localhost:3000";
 
@@ -31,6 +31,13 @@ phone: '',
 });
 const error = ref('');
 
+const validExpirationDates = ref([]);
+
+const fetchValidExpirationDates = async () => {
+    const res = await fetch(`${API_BASE_URL}/customers/valid-expiration-dates`);
+    validExpirationDates.value = await parseResponse(res) || [];
+};
+
 const createCustomer = async () => {
 error.value = '';
 try {
@@ -50,6 +57,10 @@ query: {
     error.value = 'Error creating customer: ' + e.message;
 }
 };
+
+onMounted(() => {
+fetchValidExpirationDates();
+});
 </script>
 
 <template>
@@ -66,7 +77,12 @@ query: {
 <label for="cardNumber">Card Number: </label>
 <input type="text" id="cardNumber" v-model="customer.paymentInfo.cardNumber" required /> <br />
 <label for="expirationDate">Expiration Date: </label>
-<input type="text" id="expirationDate" v-model="customer.paymentInfo.expirationDate" required /> <br />
+<select id="expirationDate" v-model="customer.paymentInfo.expirationDate" required >
+    <option disabled value="">Please select a date</option>
+    <option v-for="date in validExpirationDates" :key="date" :value="date">
+    {{ date }}
+    </option>
+</select> <br />
 <label for="cvv">CVV: </label>
 <input type="text" id="cvv" v-model="customer.paymentInfo.cvv" required />
 </p>

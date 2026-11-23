@@ -34,6 +34,12 @@ return data;
 const customerOrders = ref([]);
 const allOrders = ref([]);
 const selectedOrderId = ref('');
+const validExpirationDates = ref([]);
+
+const fetchValidExpirationDates = async () => {
+    const res = await fetch(`${API_BASE_URL}/customers/valid-expiration-dates`);
+    validExpirationDates.value = await parseResponse(res) || [];
+};
 
 const availableOrders = computed(() => {
     return allOrders.value.filter((o) => !customerOrders.value.some((co) => o.orderId === co.orderId));
@@ -82,6 +88,7 @@ query: {
 onMounted(() => {
 fetchCustomerDetails();
 fetchAllOrders();
+fetchValidExpirationDates();
 });
 
 const removeOrder = async (orderId) => {
@@ -113,7 +120,12 @@ else { selectedOrderId.value = ''; await fetchCustomerDetails(); }
 <label for="cardNumber">Card Number: </label>
 <input type="text" id="cardNumber" v-model="customer.paymentInfo.cardNumber" required /> <br />
 <label for="expirationDate">Expiration Date: </label>
-<input type="text" id="expirationDate" v-model="customer.paymentInfo.expirationDate" required /> <br />
+<select id="expirationDate" v-model="customer.paymentInfo.expirationDate" required >
+    <option disabled value="">Please select a date</option>
+    <option v-for="date in validExpirationDates" :key="date" :value="date">
+    {{ date }}
+    </option>
+</select> <br />
 <label for="cvv">CVV: </label>
 <input type="text" id="cvv" v-model="customer.paymentInfo.cvv" required />
 </p>

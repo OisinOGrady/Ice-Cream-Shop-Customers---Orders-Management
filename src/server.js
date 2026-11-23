@@ -1,5 +1,5 @@
 //Imported Customer Data Operations
-import {customers, getCustomer, addCustomer, updateCustomerById, deleteCustomerById, addOrderToCustomer, deleteOrderFromCustomer}from './customers.js';
+import {customers, getCustomer, addCustomer, updateCustomerById, deleteCustomerById, addOrderToCustomer, deleteOrderFromCustomer, getValidExpirationDates}from './customers.js';
 import {getOrder, getOrders, getOrderDetails, addOrder, updateOrderById, deleteOrderById, addCustomerToOrder, deleteCustomerFromOrder} from './orders.js';
 import swaggerUi from 'swagger-ui-express';
 import express from 'express';
@@ -12,6 +12,11 @@ app.use(cors());
 app.use(express.json());
 
 // API Customer Operations
+app.get('/customers/valid-expiration-dates', (req, res) => {
+    const validDates = getValidExpirationDates();
+    res.json(validDates);
+})
+
 app.get('/customers', (req, res) => {
     const customerList = customers
     res.json(customerList.value);
