@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 const API_BASE_URL = "http://localhost:3000";
 
@@ -23,11 +23,35 @@ product: '',
 flavor: '',
 toppings: '',
 quantity: 1,
+orderDate: '',
 });
 const error = ref('');
+const validProducts = ref([]);
+const validFlavors = ref([]);
+
+const isValidCalendarDate = (value) => {
+if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+const [year, month, day] = value.split('-').map(Number);
+const date = new Date(year, month - 1, day);
+return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day;
+};
+
+const fetchValidProducts = async () => {
+    const res = await fetch(`${API_BASE_URL}/orders/valid-products`);
+    validProducts.value = await parseResponse(res) || [];
+};
+
+const fetchValidFlavors = async () => {
+    const res = await fetch(`${API_BASE_URL}/orders/valid-flavors`);
+    validFlavors.value = await parseResponse(res) || [];
+};
 
 const createOrder = async () => {
 error.value = '';
+if (!isValidCalendarDate(order.value.orderDate)) {
+    error.value = 'Order date must be a valid calendar date.';
+    return;
+}
 try {
     const response = await fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
@@ -45,6 +69,11 @@ query: {
     error.value = 'Error creating order: ' + e.message;
 }
 };
+
+onMounted(() => {
+fetchValidProducts();
+fetchValidFlavors();
+});
 </script>
 
 <template>
@@ -54,11 +83,21 @@ query: {
 <p>
 <label for="product">Product:</label>
 <br/>
-<input type="text" id="product" v-model="order.product" required />
+<select id="product" v-model="order.product" required>
+    <option disabled value="">Please select a product</option>
+    <option v-for="product in validProducts" :key="product" :value="product">
+    {{ product }}
+    </option>
+</select>
 </p>
 <p>
 <label for="flavor">Flavor:</label><br />
-<input type="text" id="flavor" v-model="order.flavor" required />
+<select id="flavor" v-model="order.flavor" required>
+    <option disabled value="">Please select a flavor</option>
+    <option v-for="flavor in validFlavors" :key="flavor" :value="flavor">
+    {{ flavor }}
+    </option>
+</select>
 </p>
 <p>
 <label for="toppings">Toppings:</label><br />
@@ -66,7 +105,11 @@ query: {
 </p>
 <p>
 <label for="quantity">Quantity:</label><br />
-<input type="number" id="quantity" min="1" v-model="order.quantity" required />
+<input type="number" id="quantity" min="1" v-model.number="order.quantity" required />
+</p>
+<p>
+<label for="orderDate">Order Date:</label><br />
+<input type="date" id="orderDate" v-model="order.orderDate" required />
 </p>
 <p><button type="submit">Save New Order</button></p>
 </form>

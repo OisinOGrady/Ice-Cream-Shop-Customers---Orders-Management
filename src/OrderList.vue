@@ -56,6 +56,7 @@ fetchOrders();
                     <th>Flavor</th>
                     <th>Toppings</th>
                     <th>Quantity</th>
+                    <th>Order Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -71,6 +72,7 @@ fetchOrders();
         <td>{{ order.flavor }}</td>
         <td>{{ order.toppings }}</td>
         <td>{{ order.quantity }}</td>
+        <td>{{ order.orderDate }}</td>
         <td>
         <button @click="deleteOrder(order.orderId, order.product)">Delete</button>
         </td>

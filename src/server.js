@@ -1,6 +1,6 @@
 //Imported Customer Data Operations
 import {customers, getCustomer, addCustomer, updateCustomerById, deleteCustomerById, addOrderToCustomer, deleteOrderFromCustomer, getValidExpirationDates}from './customers.js';
-import {getOrder, getOrders, getOrderDetails, addOrder, updateOrderById, deleteOrderById, addCustomerToOrder, deleteCustomerFromOrder} from './orders.js';
+import {getOrder, getOrders, getOrderDetails, addOrder, updateOrderById, deleteOrderById, addCustomerToOrder, deleteCustomerFromOrder, getValidProducts, getValidFlavors} from './orders.js';
 import swaggerUi from 'swagger-ui-express';
 import express from 'express';
 import cors from 'cors';
@@ -84,6 +84,16 @@ app.delete('/customers/:customerId/orders/:orderId', (req, res) => {
 })
 
 // API Order Operations
+app.get('/orders/valid-products', (req, res) => {
+    const validProducts = getValidProducts();
+    res.json(validProducts);
+})
+
+app.get('/orders/valid-flavors', (req, res) => {
+    const validFlavors = getValidFlavors();
+    res.json(validFlavors);
+})
+
 app.get('/orders', (req, res) => {
     const orderList = getOrders();
     res.json(orderList);
@@ -291,6 +301,40 @@ const swaggerDocument = {
                 }
             }
         },
+        '/orders/valid-products': {
+            get: {
+                tags: ['Orders'],
+                summary: 'List valid product values',
+                responses: {
+                    200: {
+                        description: 'Array of allowed product names',
+                        content: {
+                            'application/json': {
+                                schema: { type: 'array', items: { type: 'string' } },
+                                example: ['Bowl', 'Cone', 'Shake', 'Sundae']
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        '/orders/valid-flavors': {
+            get: {
+                tags: ['Orders'],
+                summary: 'List valid flavor values',
+                responses: {
+                    200: {
+                        description: 'Array of allowed flavor names',
+                        content: {
+                            'application/json': {
+                                schema: { type: 'array', items: { type: 'string' } },
+                                example: ['Vanilla', 'Chocolate', 'Strawberry', 'Mint', 'Cookies and Cream']
+                            }
+                        }
+                    }
+                }
+            }
+        },
         '/orders': {
             get: {
                 tags: ['Orders'],
@@ -309,7 +353,7 @@ const swaggerDocument = {
             post: {
                 tags: ['Orders'],
                 summary: 'Create an order',
-                description: 'The orderId is assigned by the server. Quantity must be greater than zero.',
+                description: 'The orderId is assigned by the server. Product and flavor must be values from the domain lists, quantity must be greater than zero, and orderDate must be a real calendar date.',
                 requestBody: {
                     required: true,
                     content: {
@@ -319,14 +363,15 @@ const swaggerDocument = {
                                 product: 'Cone',
                                 flavor: 'Mint',
                                 toppings: 'Chocolate Chips',
-                                quantity: 1
+                                quantity: 1,
+                                orderDate: '2026-11-27'
                             }
                         }
                     }
                 },
                 responses: {
                     201: { description: 'Order created', content: jsonBody('#/components/schemas/Order') },
-                    400: errorResponse('Validation failed', 'Quantity must be greater than zero.')
+                    400: errorResponse('Validation failed', 'Product is not a valid choice.')
                 }
             }
         },
@@ -354,7 +399,8 @@ const swaggerDocument = {
                                 product: 'Bowl',
                                 flavor: 'Vanilla',
                                 toppings: 'Cherries',
-                                quantity: 4
+                                quantity: 4,
+                                orderDate: '2026-11-27'
                             }
                         }
                     }
@@ -416,17 +462,19 @@ const swaggerDocument = {
                     product: { type: 'string', example: 'Bowl' },
                     flavor: { type: 'string', example: 'Vanilla' },
                     toppings: { type: 'string', example: 'Sprinkles' },
-                    quantity: { type: 'integer', example: 2 }
+                    quantity: { type: 'integer', example: 2 },
+                    orderDate: { type: 'string', format: 'date', example: '2026-11-20' }
                 }
             },
             OrderInput: {
                 type: 'object',
-                required: ['product', 'flavor', 'quantity'],
+                required: ['product', 'flavor', 'quantity', 'orderDate'],
                 properties: {
-                    product: { type: 'string', example: 'Cone' },
-                    flavor: { type: 'string', example: 'Mint' },
+                    product: { type: 'string', enum: ['Bowl', 'Cone', 'Shake', 'Sundae'], example: 'Cone' },
+                    flavor: { type: 'string', enum: ['Vanilla', 'Chocolate', 'Strawberry', 'Mint', 'Cookies and Cream'], example: 'Mint' },
                     toppings: { type: 'string', example: 'Chocolate Chips' },
-                    quantity: { type: 'integer', description: 'Must be greater than zero', example: 1 }
+                    quantity: { type: 'integer', description: 'Must be greater than zero', example: 1 },
+                    orderDate: { type: 'string', format: 'date', description: 'Must be a real calendar date (YYYY-MM-DD)', example: '2026-11-27' }
                 }
             },
             CustomerSummary: {
